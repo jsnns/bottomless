@@ -2,7 +2,7 @@ import requests
 import logging
 
 
-def get_instacart_url_from_anon() -> str:
+def get_instacart_url_from_anon() -> tuple[str, str]:
     url = "https://svc.sandbox.anon.com/account/api/v1/cdpUrl"
 
     payload = {
@@ -23,6 +23,6 @@ def get_instacart_url_from_anon() -> str:
 
     if not url:
         logging.error("No cdpUrl found in response")
-        return ""
+        return "", ""
 
-    return url
+    return url, response.json().get("liveStreamingUrl")

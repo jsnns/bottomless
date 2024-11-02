@@ -73,7 +73,12 @@ async def on_reaction_add(reaction, user):
     if reaction.emoji == "✅" and hasattr(bot, "shopping_list"):
         await reaction.message.channel.send("Adding items to cart...")
         try:
-            url = get_authorized_url()
+            url, debug_url = get_authorized_url()
+
+            # send debug url
+            await reaction.message.channel.send(
+                f"[Watch me add them to your cart!]({debug_url})"
+            )
 
             await add_items_to_cart(url, getattr(bot, "shopping_list"))
             await reaction.message.channel.send(

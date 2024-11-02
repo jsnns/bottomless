@@ -6,7 +6,7 @@ from playwright.sync_api import Page
 
 # 1. create url with anon
 def get_authorized_url() -> str:
-    return get_instacart_url_from_anon()
+    return get_instacart_url_from_anon()[0]
 
 
 # 2. create shopping list from images
