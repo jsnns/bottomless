@@ -25,7 +25,7 @@ def add_items_to_cart(url: str, shopping_list: list[ShoppingListItem]) -> None:
     with sync_playwright() as playwright:
         browser = playwright.chromium.connect_over_cdp(url)
         page = browser.new_page()
-    add_items_to_instacart(url, page, shopping_list)
+        add_items_to_instacart(url, page, shopping_list)
 
 
 # 4. manually checkout on phone
@@ -36,11 +36,15 @@ def send_prompt_to_complete_on_mobile() -> None:
 def run():
     before_image_path = "before.jpeg"
     after_image_path = "after.jpeg"
-    store_name = "Safeway"
 
     url = get_authorized_url()
+    print("Got url from anon", url)
     shopping_list = create_shopping_list(before_image_path, after_image_path)
+    print("Created shopping list")
+    for item in shopping_list:
+        print(item)
     add_items_to_cart(url, shopping_list)
+    print("Added items to cart")
     send_prompt_to_complete_on_mobile()
 
 
