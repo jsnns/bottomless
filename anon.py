@@ -8,7 +8,7 @@ def get_instacart_url_from_anon() -> str:
     payload = {
         "apps": ["instacart"],
         "appUserId": "sansburyjacob@gmail.com",
-        "proxy": True,
+        "proxy": False,
     }
     headers = {
         "Authorization": "Bearer anon_Psst/WzqSJTg0gat06QlSgOya+QFfdEST+xa9sXcnIaXK9OrB9ohiTm0H5FmAFYGqfrBOnrrtrRrEHQj",
