@@ -1,5 +1,6 @@
 from anon import get_instacart_url_from_anon
 from claude import get_shopping_list, ShoppingListItem
+from computer_use import prompt_computer_use
 
 
 # 1. create url with anon
@@ -20,7 +21,18 @@ def create_shopping_list(
 def add_items_to_cart(
     url: str, store_name: str, shopping_list: list[ShoppingListItem]
 ) -> None:
-    pass
+    shopping_list_str = "\n".join(
+        [f"- {item.item_name} x{item.quantity}" for item in shopping_list]
+    )
+    steps = [
+        f"Visit {url}",
+        f"Visit the {store_name} store page",
+        f"Add the following items to the cart:\n{shopping_list_str}",
+    ]
+
+    prompt = "\n".join(steps)
+
+    prompt_computer_use(prompt)
 
 
 # 4. manually checkout on phone
