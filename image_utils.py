@@ -49,7 +49,7 @@ def image_to_base64(image: Image.Image, format: str = "JPEG") -> str:
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 
-def process_image(path: str, max_size: int = 1080) -> str:
+def process_image(path: str, max_size: int = 1920) -> str:
     """
     Download an image or GIF, resize it, and return it as a base64 encoded string.
     For GIFs, it extracts a frame from the middle.
