@@ -1,8 +1,11 @@
 import os
 import discord
 from discord.ext import commands
-from main import create_shopping_list, add_items_to_cart, get_authorized_url
-
+from main import (
+    create_shopping_list,
+    add_items_to_cart,
+)
+from anon import get_instacart_url_from_anon
 from discord.ext import commands
 
 # create discord bot
@@ -73,7 +76,7 @@ async def on_reaction_add(reaction, user):
     if reaction.emoji == "✅" and hasattr(bot, "shopping_list"):
         await reaction.message.channel.send("Adding items to cart...")
         try:
-            url, debug_url = get_authorized_url()
+            url, debug_url = get_instacart_url_from_anon()
 
             # send debug url
             await reaction.message.channel.send(
@@ -82,7 +85,7 @@ async def on_reaction_add(reaction, user):
 
             await add_items_to_cart(url, getattr(bot, "shopping_list"))
             await reaction.message.channel.send(
-                "Items have been added to your cart! Please complete checkout on your mobile device."
+                "Your shopping list has been created! [Confirm on your mobile device](https://www.instacart.com/store/checkout_v4)"
             )
         except Exception as e:
             await reaction.message.channel.send(f"Error adding items to cart: {str(e)}")
