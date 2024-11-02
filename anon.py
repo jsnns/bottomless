@@ -17,10 +17,10 @@ def get_instacart_url_from_anon() -> str:
 
     response = requests.request("POST", url, json=payload, headers=headers)
 
-    live_streaming_url = response.json().get("liveStreamingUrl")
+    url = response.json().get("cdpUrl")
 
-    if not live_streaming_url:
-        logging.error("No liveStreamingUrl found in response")
+    if not url:
+        logging.error("No cdpUrl found in response")
         return ""
 
-    return live_streaming_url
+    return url
