@@ -1,6 +1,7 @@
 from anon import get_instacart_url_from_anon
 from claude import get_shopping_list, ShoppingListItem
-from computer_use import prompt_computer_use
+from instacart import add_items_to_instacart
+from playwright.sync_api import Page
 
 
 # 1. create url with anon
@@ -18,21 +19,13 @@ def create_shopping_list(
 
 
 # 3. add items to cart with computer use
-def add_items_to_cart(
-    url: str, store_name: str, shopping_list: list[ShoppingListItem]
-) -> None:
-    shopping_list_str = "\n".join(
-        [f"- {item.item_name} x{item.quantity}" for item in shopping_list]
-    )
-    steps = [
-        f"Visit {url}",
-        f"Visit the {store_name} store page",
-        f"Add the following items to the cart:\n{shopping_list_str}",
-    ]
+def add_items_to_cart(url: str, shopping_list: list[ShoppingListItem]) -> None:
+    from playwright.sync_api import sync_playwright
 
-    prompt = "\n".join(steps)
-
-    prompt_computer_use(prompt)
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.connect_over_cdp(url)
+        page = browser.new_page()
+    add_items_to_instacart(url, page, shopping_list)
 
 
 # 4. manually checkout on phone
@@ -47,7 +40,7 @@ def run():
 
     url = get_authorized_url()
     shopping_list = create_shopping_list(before_image_path, after_image_path)
-    add_items_to_cart(url, store_name, shopping_list)
+    add_items_to_cart(url, shopping_list)
     send_prompt_to_complete_on_mobile()
 
 
