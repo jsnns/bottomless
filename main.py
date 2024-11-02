@@ -1,6 +1,9 @@
+from anon import get_instacart_url_from_anon
+
+
 # 1. create url with anon
 def get_authorized_url() -> str:
-    return ""
+    return get_instacart_url_from_anon()
 
 
 # 2. create shopping list from images
@@ -26,6 +29,7 @@ def run():
     store_name = "Safeway"
 
     url = get_authorized_url()
+    print(url)
     shopping_list = create_shopping_list(before_image_path, after_image_path)
     add_items_to_cart(url, store_name, shopping_list)
     send_prompt_to_complete_on_mobile()
