@@ -24,7 +24,8 @@ def add_items_to_cart(url: str, shopping_list: list[ShoppingListItem]) -> None:
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.connect_over_cdp(url)
-        page = browser.new_page()
+        default_context = browser.contexts[0]
+        page = default_context.pages[0]
         add_items_to_instacart(url, page, shopping_list)
 
 

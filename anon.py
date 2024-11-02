@@ -19,6 +19,8 @@ def get_instacart_url_from_anon() -> str:
 
     url = response.json().get("cdpUrl")
 
+    print("Debug url: ", response.json().get("liveStreamingUrl"))
+
     if not url:
         logging.error("No cdpUrl found in response")
         return ""

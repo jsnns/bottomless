@@ -6,10 +6,16 @@ from claude import ShoppingListItem
 def add_items_to_instacart(url: str, page: Page, shopping_list: List[ShoppingListItem]):
     for item in shopping_list:
         # Search for item
-        page.goto(f"https://www.instacart.com/store/safeway/s?k={item.item_name}")
+        page.click('a[href="/store/safeway/storefront"]')
+
+        search_input = page.locator("#search-bar-input")
+        search_input.click()
+        search_input.fill(f"{item.item_name} {item.brand_name or ''}")
+        search_input.press("Enter")
 
         # Add first result to cart
         add_to_cart_button = page.locator(
             '[data-testid="addItemButtonExpandingAdd"]'
         ).first
-        add_to_cart_button.click()
+        for _ in range(item.quantity):
+            add_to_cart_button.click()
