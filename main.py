@@ -19,14 +19,14 @@ def create_shopping_list(
 
 
 # 3. add items to cart with computer use
-def add_items_to_cart(url: str, shopping_list: list[ShoppingListItem]) -> None:
-    from playwright.sync_api import sync_playwright
+async def add_items_to_cart(url: str, shopping_list: list[ShoppingListItem]) -> None:
+    from playwright.async_api import async_playwright
 
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.connect_over_cdp(url)
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.connect_over_cdp(url)
         default_context = browser.contexts[0]
         page = default_context.pages[0]
-        add_items_to_instacart(url, page, shopping_list)
+        await add_items_to_instacart(url, page, shopping_list)
 
 
 # 4. manually checkout on phone
@@ -44,7 +44,9 @@ def run():
     print("Created shopping list")
     for item in shopping_list:
         print(item)
-    add_items_to_cart(url, shopping_list)
+    import asyncio
+
+    asyncio.run(add_items_to_cart(url, shopping_list))
     print("Added items to cart")
     send_prompt_to_complete_on_mobile()
 
