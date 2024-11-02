@@ -30,7 +30,7 @@ def get_shopping_list(
         model="claude-3-5-sonnet-20241022",
         max_tokens=1000,
         temperature=0,
-        system='You will be provided with images of my Fridge on 7 days ago and now. You should output the consumption this week along with a shopping list based my consumption.\n\nOutput sections:\n\n1. A list of consumed items between both images.\n2. A ```json {}``` block with two keys "consumed" and "shopping_list" each should be a list of objects with "item_name", "category", "quantity", "unit", and "brand_name" keys.',
+        system='You will be provided with images of my Fridge on 7 days ago and now. You should output the consumption this week along with a shopping list based my consumption.\n\nOutput sections:\n\n1. A list of consumed items between both images.\n2. A ```json {}``` block with two keys "consumed" and "shopping_list" each should be a list of objects with "item_name", "category", "quantity", "unit", and "brand_name" keys. Specify unit in the unit most likely to be used by the store. For ex "six pack" and not "can".',
         messages=[
             {
                 "role": "user",
