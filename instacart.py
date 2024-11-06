@@ -199,39 +199,19 @@ async def complete_checkout(page: Page):
 
             # Select second available time slot
             print("Selecting second available time slot...")
-            day_buttons = page.locator('div[role="tabpanel"] button')
+            # Only select buttons within visible tabpanel (not display:none)
+            day_buttons = page.locator('div[role="tabpanel"]:not([style*="display: none"]) button')
             button_count = await day_buttons.count()
             print(f"Found {button_count} time slot buttons")
 
             if button_count > 1:
-                second_day = day_buttons.nth(1)  # Get second button (index 1)
-                print("Selecting second soonest Super Saver day...")
+                second_day = day_buttons.nth(2)  # Get third time slot that day
+                print("Selecting third time slot that day.")
                 await second_day.click()
             else:
+                day_buttons.nth(0)  # Get the first and only slot
                 print("Not enough time slot buttons found")
 
-            await page.wait_for_timeout(2000)
-
-            # Select first available morning time slot
-            print("Looking for first available morning time slot...")
-            morning_times = ["7am", "8am", "9am", "10am", "11am"]
-            time_found = False
-            
-            for time in morning_times:
-                try:
-                    # Look for button containing this time
-                    slot = page.locator(f'button:has-text("{time}")').first
-                    if await slot.is_visible():
-                        print(f"Found time slot with {time}")
-                        await slot.click()
-                        time_found = True
-                        break
-                except Exception as e:
-                    continue
-            
-            if not time_found:
-                print("Could not find any morning time slots")
-            
             await page.wait_for_timeout(2000)
             
         except Exception as e:
@@ -242,7 +222,7 @@ async def complete_checkout(page: Page):
         try:
             print("Checking if time selection modal needs dismissing...")
             await page.mouse.click(10, 10)
-            await page.wait_for_timeout(2000)
+            await page.wait_for_timeout(1000)
         except Exception as e:
             print("Time selection modal already closed")
             
