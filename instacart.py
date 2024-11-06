@@ -7,8 +7,9 @@ async def add_items_to_instacart(
     url: str, page: Page, shopping_list: List[ShoppingListItem]
 ):
     await page.click('a[href="/store/safeway/storefront"]')
-    for item in []:
-        # Search for item
+    print("On Safeway store; about to add items to cart")
+    for item in shopping_list:
+        print(f"Searching for {item.item_name}")
         search_input = page.locator("#search-bar-input")
         await search_input.click()
         await search_input.fill(f"{item.item_name}")
@@ -20,3 +21,7 @@ async def add_items_to_instacart(
         ).first
         for _ in range(item.quantity):
             await add_to_cart_button.click()
+    
+    # Keep the session open for 30 seconds after completing
+    print("Items added to cart. Keeping session open for 30 seconds...")
+    await page.wait_for_timeout(30000)  # Playwright uses milliseconds
