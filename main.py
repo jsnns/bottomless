@@ -2,6 +2,7 @@ from anon import get_instacart_url_from_anon
 from claude import get_shopping_list, ShoppingListItem
 from instacart import add_items_to_instacart, complete_checkout, clear_cart
 from playwright.sync_api import Page
+import os
 
 
 # 1. create url with anon
@@ -22,15 +23,14 @@ def create_shopping_list(
 async def go_shopping(url: str, shopping_list: list[ShoppingListItem]) -> None:
     from playwright.async_api import async_playwright
 
-
-
     async with async_playwright() as playwright:
         browser = await playwright.chromium.connect_over_cdp(url)
         default_context = browser.contexts[0]
         page = default_context.pages[0]
         try:
-            print("First, clear cart in case there are items already in it")
-            await clear_cart(page)
+            if os.getenv('CLEAR_CART_BEFORE_SHOPPING', 'false').lower() == 'true':
+                print("First, clear cart in case there are items already in it")
+                await clear_cart(page)
             print("Ok, now go shopping for just the new items")
             await add_items_to_instacart(url, page, shopping_list)
             print("Added items to Instacart cart")
@@ -48,7 +48,7 @@ def send_prompt_to_complete_on_mobile() -> None:
 
 def run():
     # Temporary hard-coded shopping list for testing
-    use_hardcoded_list = False # True  # Toggle this for testing
+    use_hardcoded_list = os.getenv('USE_HARDCODED_SHOPPING_LIST', 'false').lower() == 'true'
     
     if use_hardcoded_list:
         shopping_list = [
