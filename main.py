@@ -28,13 +28,15 @@ async def go_shopping(url: str, shopping_list: list[ShoppingListItem]) -> None:
         default_context = browser.contexts[0]
         page = default_context.pages[0]
         try:
+            # Don't navigate away - the WebSocket URL is probably single-use
             if os.getenv('CLEAR_CART_BEFORE_SHOPPING', 'false').lower() == 'true':
                 print("First, clear cart in case there are items already in it")
                 await clear_cart(page)
             print("Ok, now go shopping for just the new items")
             await add_items_to_instacart(url, page, shopping_list)
             print("Added items to Instacart cart")
-            await complete_checkout(page)
+            if os.getenv('DO_PAY_WITHOUT_HUMAN_CONFIRMATION', 'false').lower() == 'true':
+                await complete_checkout(page)
             print("Completed checkout")
         except Exception as e:
             print(f"Shopping failed: {str(e)}")
@@ -52,20 +54,20 @@ def run():
     
     if use_hardcoded_list:
         shopping_list = [
-            # ShoppingListItem(
-            #     item_name='Hard Seltzer',
-            #     category='Beverages',
-            #     quantity=1,
-            #     unit='six pack',
-            #     brand_name='Blue Drop'
-            # ),
             ShoppingListItem(
-                item_name='Whole Milk',
-                category='Dairy',
+                item_name='Hard Seltzer',
+                category='Beverages',
                 quantity=1,
-                unit='half gallon',
-                brand_name='Whole Foods'
+                unit='six pack',
+                brand_name='Blue Drop'
             ),
+            # ShoppingListItem(
+            #     item_name='Whole Milk',
+            #     category='Dairy',
+            #     quantity=1,
+            #     unit='half gallon',
+            #     brand_name='Whole Foods'
+            # ),
             # ShoppingListItem(
             #     item_name='Prepared Meals',
             #     category='Ready-to-eat',
@@ -92,7 +94,7 @@ def run():
         
     import asyncio
     asyncio.run(go_shopping(url, shopping_list))
-    print("Went shopping. Added items to cart")
+    print("Went shopping. ")
     send_prompt_to_complete_on_mobile()
 
 

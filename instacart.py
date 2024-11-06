@@ -160,6 +160,8 @@ async def complete_checkout(page: Page):
         # Step 2: Go to checkout
         print("Go to checkout...")
         checkout_button = page.locator('button:has-text("Go to checkout")').first
+        # print("Waiting for checkout button to be enabled...")
+        await page.wait_for_selector('button:has-text("Go to checkout"):not([disabled])', timeout=27800)
         await checkout_button.click()
         await page.wait_for_timeout(3000)
         
@@ -191,21 +193,84 @@ async def complete_checkout(page: Page):
             print("Selecting second available day...")
             day_buttons = page.locator('div[role="tablist"] button')
             second_day = day_buttons.nth(1)  # Get second button (index 1)
+            print("Selecting second soonest Super Saver day...")
             await second_day.click()
             await page.wait_for_timeout(2000)
+
+            # Select second available time slot
+            print("Selecting second available time slot...")
+            day_buttons = page.locator('div[role="tabpanel"] button')
+            button_count = await day_buttons.count()
+            print(f"Found {button_count} time slot buttons")
+
+            if button_count > 1:
+                second_day = day_buttons.nth(1)  # Get second button (index 1)
+                print("Selecting second soonest Super Saver day...")
+                await second_day.click()
+            else:
+                print("Not enough time slot buttons found")
+
+            await page.wait_for_timeout(2000)
+
+            # Select first available morning time slot
+            print("Looking for first available morning time slot...")
+            morning_times = ["7am", "8am", "9am", "10am", "11am"]
+            time_found = False
             
-            # Click outside to dismiss the modal (top-left corner is usually safe)
-            print("Dismissing time selection modal...")
+            for time in morning_times:
+                try:
+                    # Look for button containing this time
+                    slot = page.locator(f'button:has-text("{time}")').first
+                    if await slot.is_visible():
+                        print(f"Found time slot with {time}")
+                        await slot.click()
+                        time_found = True
+                        break
+                except Exception as e:
+                    continue
+            
+            if not time_found:
+                print("Could not find any morning time slots")
+            
+            await page.wait_for_timeout(2000)
+            
+        except Exception as e:
+            print(f"Error setting delivery time: {str(e)}")
+            print("Super saver delivery might not be available")
+        
+        # Dismiss time-picking modal if it didn't auto-close
+        try:
+            print("Checking if time selection modal needs dismissing...")
             await page.mouse.click(10, 10)
             await page.wait_for_timeout(2000)
         except Exception as e:
-            print("Super saver delivery is not available")
-        
+            print("Time selection modal already closed")
+            
+        # Step 5B Handle ID verification if it appears after delivery selection
+        try:
+            id_continue_button = page.locator('button:has-text("Continue")').first
+            if await id_continue_button.is_visible():
+                print("ID verification modal detected after delivery selection, clicking Continue...")
+                await id_continue_button.click()
+                await page.wait_for_timeout(3000)
+        except Exception as e:
+            print("No ID verification needed after delivery selection...")
+
         # Step 6: Place order
         print("Place order...")
         place_order_button = page.locator('button:has-text("Place order")').first
         await place_order_button.click()
         await page.wait_for_timeout(3000)
+
+        # Step 6B: Handle ID verification if it appears here
+        try:
+            id_continue_button = page.locator('button:has-text("Continue")').first
+            if await id_continue_button.is_visible():
+                print("ID verification modal detected, clicking Continue...")
+                await id_continue_button.click()
+                await page.wait_for_timeout(3000)
+        except Exception as e:
+            print("No ID verification needed, continuing...")
         
         # Step 7: Confirm payment method
         print("Confirm payment method...")
