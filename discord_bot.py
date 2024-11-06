@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from main import (
     create_shopping_list,
-    add_items_to_cart,
+    go_shopping,
 )
 from anon import get_instacart_url_from_anon
 from discord.ext import commands
@@ -83,7 +83,7 @@ async def on_reaction_add(reaction, user):
                 f"[Watch me add them to your cart!]({debug_url})"
             )
 
-            await add_items_to_cart(url, getattr(bot, "shopping_list"))
+            await go_shopping(url, getattr(bot, "shopping_list"))
             await reaction.message.channel.send(
                 "Your shopping list has been created! [Confirm on your mobile device](https://www.instacart.com/store/checkout_v4)"
             )
